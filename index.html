@@ -3,48 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TGbT - Schätzspiel</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Technik-Schätzfragen</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>TGbT - Technisches Schätzspiel</h1>
-    </header>
-    
-    <main>
-        <!-- Eingabe der Themen-ID -->
-        <section id="setup">
-            <label for="themen-id">Themen-ID eingeben (z.B. ET01):</label>
-            <input type="text" id="themen-id" placeholder="ET01">
-
-            <!-- Game ID -->
-            <label for="game-id">Game ID:</label>
-            <input type="text" id="game-id" readonly>
-            <button id="generate-game-id">Neue Game ID generieren</button>
-
-            <!-- Spielen-Button -->
-            <button id="start-game">Spielen</button>
-
-            <!-- Hinweis für Spieler -->
-            <p id="hint">Wenn ihr zu zweit spielt, nutzt die gleiche Game ID!</p>
-        </section>
-
-        <!-- Spielbereich -->
-        <section id="game-area" style="display: none;">
-            <div id="question-area">
-                <p id="question-text">Frage wird hier angezeigt...</p>
-                <input type="number" id="answer-input" placeholder="Deine Schätzung">
-                <button id="submit-answer">Antwort einreichen</button>
+    <div class="header">
+        <h1>Technik-Schätzfragen</h1>
+        <span class="icon">🔧</span>
+    </div>
+    <div class="main-container">
+        <div class="quiz-container">
+            <div id="roleSelection">
+                <p>Sind Sie der Host oder ein Spieler?</p>
+                <button onclick="selectRole('host')">Host</button>
+                <button onclick="selectRole('player')">Spieler</button>
             </div>
-            <div id="result-area" style="display: none;">
-                <p id="correct-answer">Die richtige Antwort war: <span id="correct-value"></span></p>
-                <p id="deviation">Du warst <span id="deviation-value"></span> entfernt.</p>
-                <button id="next-question">Nächste Frage</button>
+            <div id="hostSetup" style="display: none;">
+                <input type="text" id="quizIdInput" placeholder="Quiz-ID" maxlength="4">
+                <button onclick="startGame()">Spiel starten</button>
             </div>
-        </section>
-    </main>
-
-    <script src="script.js" defer></script>
-
+            <div id="playerSetup" style="display: none;">
+                <input type="text" id="gameIdInput" placeholder="Game-ID">
+                <button onclick="joinGame()">Spiel beitreten</button>
+            </div>
+            <div id="gameInfo" style="display: none;">
+                <p>Game-ID: <span id="currentGameId"></span></p>
+                <p>Quiz-ID: <span id="currentQuizId"></span></p>
+                <p>Ihr Punktestand: <span id="playerScore">0</span></p>
+                <p>Gegner Punktestand: <span id="opponentScore">0</span></p>
+            </div>
+            <div id="animation"></div>
+            <div id="themeIcon" class="theme-icon"></div>
+            <div id="remainingQuestions"></div>
+            <div id="question"></div>
+            <div id="answerSection" style="display: none;">
+                <input type="number" id="answerInput" placeholder="Ihre Antwort">
+                <select id="unitSelect"></select>
+                <button id="submitAnswerBtn">Antwort einreichen</button>
+                <button id="checkAnswerBtn" style="display: none;">Antworten überprüfen</button>
+            </div>
+            <div id="answer" style="display: none;"></div>
+            <div class="button-group">
+                <button id="prevBtn" onclick="previousQuestion()" style="display: none;">Vorherige Frage</button>
+                <button id="nextBtn" onclick="nextQuestion()" style="display: none;">Nächste Frage</button>
+            </div>
+        </div>
+    </div>
+    <script src="questions.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
