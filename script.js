@@ -1,4 +1,3 @@
-// Beispiel-Fragen (können später durch echte Themenfragen ersetzt werden)
     
 // Funktion zum Mischen des Arrays basierend auf einem Seed (der Game ID)
 function shuffleArray(array, seed) {
