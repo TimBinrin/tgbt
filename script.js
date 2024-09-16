@@ -227,6 +227,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('question-area').style.display = 'none';
         document.getElementById('result-area').style.display = 'block';
+
+    }
+
+    // Antwort einreichen und Abweichung anzeigen
+    function submitAnswer() {
+        const userAnswer = parseFloat(document.getElementById('answer-input').value);
+        const correctAnswer = currentQuestions[currentQuestionIndex].a;  // Korrekte Antwort
+        const unit = currentQuestions[currentQuestionIndex].unit;  // Einheit hinzufügen
+        const deviation = Math.abs(userAnswer - correctAnswer);  // Berechne Abweichung
+
+        // Zeige die richtige Antwort und die Abweichung an, inklusive der Einheit
+        document.getElementById('correct-value').textContent = `${correctAnswer} ${unit}`;
+        document.getElementById('deviation-value').textContent = `${deviation.toFixed(2)} ${unit}`;
+
+        document.getElementById('question-area').style.display = 'none';
+        document.getElementById('result-area').style.display = 'block';
+    }
+
+    // Button zum Einreichen der Antwort
+    document.getElementById('submit-answer').addEventListener('click', submitAnswer);
+
+    // Antwort mit der Enter-Taste einreichen
+    document.getElementById('answer-input').addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            submitAnswer();
+        }  
+
     });
 
     // Nächste Frage anzeigen
