@@ -246,12 +246,18 @@ function generateGameID() {
     return Math.random().toString(36).substr(2, 5).toUpperCase();
 }
 
-// Zeige die nächste Frage
+// Zeige die nächste Frage inklusive der Einheit
 function showNextQuestion() {
-    document.getElementById('question-text').textContent = currentQuestions[currentQuestionIndex].q;
+    const currentQuestion = currentQuestions[currentQuestionIndex];
+    const questionText = currentQuestion.q;
+    const unit = currentQuestion.unit; // Einheit der Antwort hinzufügen
+
+    // Frage anzeigen mit der Einheit der Antwort
+    document.getElementById('question-text').textContent = `${questionText} (in ${unit})`;
+
+    // Eingabefeld leeren und Bereiche anzeigen
     document.getElementById('answer-input').value = '';
     document.getElementById('question-area').style.display = 'block';
     document.getElementById('result-area').style.display = 'none';
 }
-
-                 
+       
