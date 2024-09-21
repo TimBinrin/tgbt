@@ -1,28 +1,9 @@
-// Beispiel-Fragen (können später durch echte Themenfragen ersetzt werden)
-    
-// Funktion zum Mischen des Arrays basierend auf einem Seed (der Game ID)
-function shuffleArray(array, seed) {
-    let currentIndex = array.length, randomIndex;
-    const random = (seed) => {
-        var x = Math.sin(seed++) * 10000;
-        return x - Math.floor(x);
-    };
+let currentQuestion = 0;
+let selectedQuestions = [];
 
-    // Während noch Elemente vorhanden sind, welche gemischt werden sollen
-    while (currentIndex != 0) {
-        // Wähle ein verbleibendes Element aus
-        randomIndex = Math.floor(random(seed) * currentIndex);
-        currentIndex--;
-
-        // Tausche es mit dem aktuellen Element
-        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
-    }
-
-    return array;
-}
-
-const fragen = {
-            "ET01": [
+// Fragen-Sets nach Themen-ID organisiert
+let questionSets = {
+    "ET01": [
                 { q: "Wie hoch ist die Spannung in einer typischen Haushaltssteckdose in Deutschland?", a: 230, unit: "Volt" },
                 { q: "Wie viele Ampere hat eine Standard-Sicherung in einem Haushalt?", a: 16, unit: "Ampere" },
                 { q: "Wie viel Watt verbraucht eine durchschnittliche LED-Glühbirne?", a: 8.5, unit: "Watt" },
@@ -173,91 +154,59 @@ const fragen = {
     ],
         };
 
-let currentQuestionIndex = 0;
-let currentQuestions = [];
-let gameID = '';
 
-// Initialisiere die Seite, sobald das Dokument geladen ist
-document.addEventListener('DOMContentLoaded', () => {
-    // Setze initiale Game ID
-    document.getElementById('game-id').value = generateGameID();
-
-    // Neue Game ID generieren
-    document.getElementById('generate-game-id').addEventListener('click', () => {
-        document.getElementById('game-id').value = generateGameID();
-    });
-
-    // Spiel starten
-    document.getElementById('start-game').addEventListener('click', () => {
-        const themenID = document.getElementById('themen-id').value.toUpperCase();
-        gameID = document.getElementById('game-id').value;
-
-        // Überprüfen, ob die Themen-ID existiert
-        if (fragen[themenID]) {
-            // Fragen für die Themen-ID laden
-            currentQuestions = fragen[themenID];
-
-            // Seed für das Mischen der Fragen setzen (basierend auf der Game ID)
-            const seed = gameID.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-
-            // Fragen zufällig mischen basierend auf der Game ID
-            currentQuestions = shuffleArray(currentQuestions, seed);
-
-            // Verstecke das Setup und zeige das Spiel an
-            document.getElementById('setup').style.display = 'none';
-            document.getElementById('game-area').style.display = 'block';
-
-            // Zeige die erste Frage
-            showNextQuestion();
-        } else {
-            alert('Ungültige Themen-ID! Bitte versuche es erneut.');
-        }
-    });
-
-    // Antwort einreichen und Abweichung anzeigen
-    document.getElementById('submit-answer').addEventListener('click', () => {
-        const userAnswer = parseFloat(document.getElementById('answer-input').value);
-        const correctAnswer = currentQuestions[currentQuestionIndex].a;  // Korrekte Antwort
-        const unit = currentQuestions[currentQuestionIndex].unit;  // Einheit hinzufügen
-        const deviation = Math.abs(userAnswer - correctAnswer);  // Berechne Abweichung
-
-        // Zeige die richtige Antwort und die Abweichung an, inklusive der Einheit
-        document.getElementById('correct-value').textContent = `${correctAnswer} ${unit}`;
-        document.getElementById('deviation-value').textContent = `${deviation.toFixed(2)} ${unit}`;
-
-        document.getElementById('question-area').style.display = 'none';
-        document.getElementById('result-area').style.display = 'block';
-    });
-
-    // Nächste Frage anzeigen
-    document.getElementById('next-question').addEventListener('click', () => {
-        currentQuestionIndex++;
-        if (currentQuestionIndex < currentQuestions.length) {
-            showNextQuestion();
-        } else {
-            alert('Das Spiel ist beendet!');
-            window.location.reload();
-        }
-    });
-});
-
-// Funktion zum Generieren einer zufälligen Game ID
-function generateGameID() {
-    return Math.random().toString(36).substr(2, 5).toUpperCase();
+function randomizeGameID() {
+    let randomID = Math.floor(Math.random() * 100000).toString().padStart(5, '0');
+    document.getElementById('game-id').value = randomID;
 }
 
-// Zeige die nächste Frage inklusive der Einheit
-function showNextQuestion() {
-    const currentQuestion = currentQuestions[currentQuestionIndex];
-    const questionText = currentQuestion.q;
-    const unit = currentQuestion.unit; // Einheit der Antwort hinzufügen
+function startGame() {
+    let themeID = document.getElementById('theme-id').value.toUpperCase(); // Großbuchstaben erzwingen
+    if (!themeID || !questionSets[themeID]) {
+        alert("Bitte geben Sie eine gültige Themen-ID ein.");
+        return;
+    }
 
-    // Frage anzeigen mit der Einheit der Antwort
-    document.getElementById('question-text').textContent = `${questionText} (in ${unit})`;
+    selectedQuestions = questionSets[themeID]; // Fragen des gewählten Themas laden
+    currentQuestion = 0;
 
-    // Eingabefeld leeren und Bereiche anzeigen
-    document.getElementById('answer-input').value = '';
-    document.getElementById('question-area').style.display = 'block';
-    document.getElementById('result-area').style.display = 'none';
+    document.getElementById('game-setup').classList.add('hidden');
+    document.getElementById('game-area').classList.remove('hidden');
+    loadQuestion();
 }
-       
+
+function loadQuestion() {
+    if (currentQuestion < selectedQuestions.length) {
+        let questionObj = selectedQuestions[currentQuestion];
+        document.getElementById('question').textContent = questionObj.q;
+    } else {
+        alert("Alle Fragen beantwortet!");
+        document.getElementById('game-area').classList.add('hidden');
+        document.getElementById('restart-btn').classList.remove('hidden');
+    }
+}
+
+function submitAnswer() {
+    let answer = parseFloat(document.getElementById('answer').value);
+    let correctAnswer = selectedQuestions[currentQuestion].a;
+    let unit = selectedQuestions[currentQuestion].unit;
+    let feedback = document.getElementById('feedback');
+    let difference = Math.abs(correctAnswer - answer);
+    feedback.textContent = `Du warst ${difference} ${unit} vom richtigen Ergebnis entfernt.`;
+    document.getElementById('next-question').classList.remove('hidden');
+}
+
+function nextQuestion() {
+    currentQuestion++;
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('answer').value = '';
+    document.getElementById('next-question').classList.add('hidden');
+    loadQuestion();
+}
+
+function restartGame() {
+    location.reload();
+}
+
+// Randomize Game ID on page load
+window.onload = randomizeGameID;
