@@ -178,7 +178,8 @@ function startGame() {
 function loadQuestion() {
     if (currentQuestion < selectedQuestions.length) {
         let questionObj = selectedQuestions[currentQuestion];
-        document.getElementById('question').textContent = questionObj.q;
+        document.getElementById('question').textContent = `${questionObj.q} (in ${questionObj.unit})`;
+
     } else {
         alert("Alle Fragen beantwortet!");
         document.getElementById('game-area').classList.add('hidden');
