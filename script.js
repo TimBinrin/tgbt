@@ -175,6 +175,13 @@ function startGame() {
     loadQuestion();
 }
 
+function goToStart() {
+    // Blendet den Spielbereich aus und zeigt die Startseite wieder an
+    document.getElementById('game-area').classList.add('hidden');
+    document.getElementById('game-setup').classList.remove('hidden');
+}
+
+
 function loadQuestion() {
     if (currentQuestion < selectedQuestions.length) {
         let questionObj = selectedQuestions[currentQuestion];
